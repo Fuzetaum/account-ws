@@ -3,35 +3,30 @@ const wsboot = require('@ricardofuzeto/ws-boot');
 const {
   createUser,
   getUsers,
+  updateUser,
 } = require('./db');
 
 wsboot.init();
 
-wsboot.get('/users', (req, res) => {
-  getUsers().then(data => {
-    const page = req.query.page ? parseInt(req.query.page) : 1;
-    const lastPage = Math.ceil(Object.keys(data).length/20);
-    if (page > lastPage) {
-      res.json({
-        data: Object.keys(data)
-          .slice((lastPage - 1) * 20)
-          .map(dataItemKey => data[dataItemKey]),
-        pages: lastPage,
-        currentPage: lastPage,
-      });
-    } else {
-      res.json({
-        data: Object.keys(data)
-          .slice((page - 1) * 20, page * 20)
-          .map(dataItemKey => data[dataItemKey]),
-        pages: lastPage,
-        currentPage: page,
-      });
+wsboot.get('/users',
+  { paginated: true, pageSize: 15 },
+  (_, res) => {
+    getUsers((_, users) => res.json(users));
+  },
+);
+
+wsboot.post('/user', (req, res) => {
+  createUser(req.body, (_, result) => {
+    if (result.username && result.username === req.body.username) {
+      res.json({ status: 410, message: `Username "${result.username}" already exists` });
+      return;
     }
+    res.json({ status: 202 });
   });
 });
 
-wsboot.post('/user', (req, res) => {
-  createUser(req.body);
-  res.json({ status: 202 });
+wsboot.patch('/user/:username', (req, res) => {
+  updateUser(req.params.username, req.body, (_, result) => {
+    res.json({ patched: result.modifiedCount, status: 202 });
+  });
 });

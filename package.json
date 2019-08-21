@@ -6,10 +6,11 @@
   "license": "MIT",
   "main": "index.js",
   "dependencies": {
-    "@ricardofuzeto/ws-boot": "^0.0.1-4",
-    "@ricardofuzeto/ws-database": "^0.0.1-1",
-    "firebase": "^6.4.0",
-    "moment": "^2.24.0"
+    "@ricardofuzeto/ws-boot": "~0.0.1-1",
+    "@ricardofuzeto/ws-database": "~0.0.1-1",
+    "@ricardofuzeto/ws-store": "~0.0.1-1",
+    "moment": "2.24.0",
+    "mongodb": "3.3.0"
   },
   "scripts": {
     "start": "node src/main.js"

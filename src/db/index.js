@@ -1,13 +1,20 @@
 const wsDatabase = require('@ricardofuzeto/ws-database');
 
-const getUsers = () => {
-  return wsDatabase.get('/user');
-};
+let db;
+(async () => {
+  db = await wsDatabase;
+})();
 
-const createUser = (newUser) =>
-  wsDatabase.create(`/user/${newUser.username}`, newUser);
+const getUsers = (cb) => db.get('user', {}, cb);
+
+const createUser = (newUser, cb) =>
+  db.create('user', { username: newUser.username }, newUser, cb);
+
+const updateUser = (username, newData, cb) =>
+  db.update('user', { username }, newData, cb);
 
 module.exports = {
   createUser,
   getUsers,
+  updateUser,
 };
