@@ -226,10 +226,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@ricardofuzeto/ws-boot@~0.0.1-1":
-  version "0.0.1-6"
-  resolved "https://registry.yarnpkg.com/@ricardofuzeto/ws-boot/-/ws-boot-0.0.1-6.tgz#46f16b41e0a8e3fccd888bc517f88e7587bfda58"
-  integrity sha512-NSUNVMbDzGYWrxw7mH9QDFxeRA9mguuUiWDuNJqILZVP53QMlDQ5L8/pL9Zs/mb9tzV6RtMBxDyhzThiqru7+A==
+"@ricardofuzeto/ws-boot@~0.0.1":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@ricardofuzeto/ws-boot/-/ws-boot-0.0.2.tgz#70209ec77d8228d954a5dfe38d55a2b6eed42ccc"
+  integrity sha512-P8AWXDlvmN4GZuUN1bOVWK7KU7jQZAVVZ8BdYUX0PfgtlXPBI2sTZI9Dm/u27jSs73+Amcx0xqTfH5X5MfSSZA==
   dependencies:
     "@ricardofuzeto/ws-core" "0.0.1-4"
     cors "2.8.5"

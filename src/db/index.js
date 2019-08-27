@@ -14,22 +14,37 @@ const getProviderFromUser = (user) => ({
   type: user.providerType,
 });
 
+const getUserFromUserRequest = (user) => ({
+  username: user.username,
+  name: user.name,
+  phoneNumber: user.phoneNumber,
+  email: user.email,
+});
+
+const getUser = (username, cb) => db.get('user', { username }, cb);
+
 const getUsers = (cb) => db.get('user', {}, cb);
 
 const createCustomer = (newCustomer, cb) =>
   db.create('customer', { username: newCustomer.username }, newCustomer, cb);
 
 const createProvider = (newProvider, cb) =>
-db.create('provider', { username: newProvider.username }, newProvider, cb);
+  db.create('provider', { username: newProvider.username }, newProvider, cb);
 
 const createUser = (newUser, cb) =>
-  db.create('user', { username: newUser.username }, newUser, (error, result) => {
-    if (error) throw error;
-    else {
-      if (newUser.type.toUpperCase() === 'PROVIDER') createProvider(getProviderFromUser(newUser), cb);
-      else createCustomer(getCustomerFromUser(newUser), cb);
-    }
-  });
+  db.create('user',
+    { username: newUser.username },
+    getUserFromUserRequest(newUser),
+    (error, _) => {
+      if (error) throw error;
+      switch (newUser.type.toUpperCase()) {
+        case 'PROVIDER':
+          createProvider(getProviderFromUser(newUser), cb);
+          break;
+        default:
+          createCustomer(getCustomerFromUser(newUser), cb);
+      }
+    });
 
 const updateUser = (username, newData, cb) =>
   db.update('user', { username }, newData, cb);
@@ -37,6 +52,7 @@ const updateUser = (username, newData, cb) =>
 
 module.exports = {
   createUser,
+  getUser,
   getUsers,
   updateUser,
 };

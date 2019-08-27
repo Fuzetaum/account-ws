@@ -2,6 +2,7 @@ const wsboot = require('@ricardofuzeto/ws-boot');
 
 const {
   createUser,
+  getUser,
   getUsers,
   updateUser,
 } = require('./db');
@@ -13,6 +14,10 @@ wsboot.get('/users',
   (_, res) => {
     getUsers((_, users) => res.json(users));
   },
+);
+
+wsboot.get('/user/:username',
+  (req, res) => getUser(req.params.username, (_, user) => res.json(user[0]))
 );
 
 wsboot.post('/user', (req, res) => {
