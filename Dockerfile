@@ -1,15 +1,12 @@
-FROM node:10
+FROM maven:3.6.2-jdk-12
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+ENV DATABASE_URL mysql
+ENV TRANSFER_MAX_RETRIES 10
 
-COPY package.json /usr/src/app
-COPY application.json /usr/src/app
-COPY yarn.lock /usr/src/app
+RUN mkdir -p /usr/src/ms
+WORKDIR /usr/src/ms
 
-RUN yarn
+COPY ./target/test.backend.ricardofuzeto-0.1.0-jar-with-dependencies.jar /usr/src/ms/
 
-COPY . /usr/src/app
-
-EXPOSE 4000
-CMD [ "yarn", "start"]
+EXPOSE ${PORT:-8090}
+CMD [ "java", "-jar", "test.backend.ricardofuzeto-0.1.0-jar-with-dependencies.jar"]
