@@ -1,6 +1,7 @@
 package com.revolut.test.backend.accountWs.configuration;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.revolut.test.backend.accountWs.job.UpdateBalanceJob;
 import com.revolut.test.backend.accountWs.service.AccountService;
 import com.revolut.test.backend.accountWs.service.BalanceService;
 import com.revolut.test.backend.accountWs.service.JavalinApp;
@@ -15,11 +16,13 @@ public class EnvironmentTestUtils {
             setDatabaseUsername();
             setDatabasePassword();
             setPort();
+            setMaxNegativeBalance();
             Environment.loadApplicationConfiguration();
             JavalinApp.initialize();
             AccountService.getAccount();
             BalanceService.processDeposit();
             BalanceService.processWithdraw();
+            UpdateBalanceJob.updateBalances();
             MOCK_SERVER = new WireMockServer(9090);
             MOCK_SERVER.start();
             IS_ENVIRONMENT_LOADED = true;
@@ -30,4 +33,5 @@ public class EnvironmentTestUtils {
     private static void setDatabaseUsername() { Environment.setEnvironmentVariable(Environment.DATABASE_USERNAME, ""); }
     private static void setDatabasePassword() { Environment.setEnvironmentVariable(Environment.DATABASE_PASSWORD, ""); }
     private static void setPort() { Environment.setEnvironmentVariable(Environment.PORT, "8090"); }
+    private static void setMaxNegativeBalance() { Environment.setEnvironmentVariable(Environment.BALANCE_MAX_NEGATIVE, "10000"); }
 }

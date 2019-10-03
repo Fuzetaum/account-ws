@@ -16,7 +16,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.revolut.test.backend.accountWs.database.tables.Account.ACCOUNT;
-import static org.jooq.impl.DSL.sum;
+import static org.jooq.impl.DSL.*;
 
 public class UpdateBalanceJob {
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateBalanceJob.class);
@@ -37,14 +37,19 @@ public class UpdateBalanceJob {
                     .fetch()
                     .getValues(ACCOUNT.ID, String.class);
 
-            idList.forEach(id -> {
+            int accountsUpdated = 0;
+            for (String id : idList) {
                 Account account = JooqConfiguration.getAccountDao().fetchOneById(id);
-                account.setBalance(account.getBalance() + getAccountBalanceChange(id));
-                account.setBalanceLastUpdate(new Date(Calendar.getInstance().getTime().getTime()));
-                JooqConfiguration.getAccountDao().update(account);
-            });
+                Integer balanceChange = getAccountBalanceChange(id);
+                if (balanceChange != 0) {
+                    account.setBalance(account.getBalance() + balanceChange);
+                    account.setBalanceLastUpdate(new Date(Calendar.getInstance().getTime().getTime()));
+                    JooqConfiguration.getAccountDao().update(account);
+                    accountsUpdated += 1;
+                }
+            }
             LOGGER.info("Job execution ended");
-            return new ResponsePojo(idList.toString(), "Account balances updated: " + idList.size());
+            return new ResponsePojo("" + accountsUpdated, "Account balances updated: " + accountsUpdated);
         });
     }
 
@@ -52,7 +57,9 @@ public class UpdateBalanceJob {
         BigDecimal bdBalanceChange = JooqConfiguration.getDslContext()
                 .select(sum(Operation.OPERATION.AMOUNT))
                 .from(Operation.OPERATION)
+                .join(ACCOUNT).on(Operation.OPERATION.ACCOUNT_ID.eq(ACCOUNT.ID))
                 .where(Operation.OPERATION.ACCOUNT_ID.eq(id))
+                .and(ACCOUNT.BALANCE_LAST_UPDATE.lessThan(date(Operation.OPERATION.PROCESSING_DATE)))
                 .fetchOneInto(BigDecimal.class);
         return (bdBalanceChange == null) ? 0 : bdBalanceChange.toBigInteger().intValue();
     }
